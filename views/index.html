@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Nightlife</title>
+    <meta name="description" content="A cool thing made with Glitch">
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+    
+    <script language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div id="head">
+      <center>Nightlife</center><hr width="50%"/>
+    </div>
+    <div id="login">
+    </div>
+      <center>
+      <div id="body">
+          <h3>
+            Want to know which places are people going to?
+          </h3>
+          Have fun tonight!!<br>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Enter location to search for bars" id="search" style="display:inline-block"/>
+            
+            <span class="input-group-btn"><button id="search_bt" class="btn btn-default">
+              Search
+            </button></span>
+          </div>
+        <span id="searching" style="display:none;font-size:20px;margin-top:15px;">Searching...</span>
+      </div>
+        <div id="footer">
+          Created using Google Places API | <a href="https://github.com/NitronR/" style="color:white">@NitronR</a> | freeCodeCamp
+        </div>
+      </center>
+    <script src="/client.js"></script>
+  </body>
+</html>
