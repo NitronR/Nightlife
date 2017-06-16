@@ -31,8 +31,8 @@ app.post("/get_bars",function(request,res){
   var placeResults=[];
   googleMapsClient.places({query: "bars in "+request.body.address}, function(err, res1) {
     if (!err) {
-      var resNum=3;
-      var resNum2=3;
+      var resNum=res1.json.results.length;
+      var resNum2=resNum;
       res1.json.results.forEach(function(e){
         if(resNum!=0){
           resNum--;

@@ -31,7 +31,6 @@ $("#body").on('click',".going",function(){
       }else{
         twitterWindow.location.href="https://api.twitter.com/oauth/authenticate?oauth_token="+res;
         $.post("/get_user",{tok:res},function(response){
-          console.log("h");
           if(!response.user){
             alert("Error logging in.");
           }else if(response.error_fetching_user){
