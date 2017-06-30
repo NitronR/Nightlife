@@ -29,60 +29,60 @@ app.get("/", function (request, response) {
 
 app.post("/get_bars",function(request,res){
   var placeResults=[];
-  googleMapsClient.places({query: "bars in "+request.body.address}, function(err, res1) {
-    if (!err) {
+  mongodb.MongoClient.connect(process.env.DB_URL,function(err,db){
+  googleMapsClient.places({query: "bars in "+request.body.address}, function(err1, res1) {
+    if(!err1) {
       var resNum=res1.json.results.length;
-      var resNum2=resNum;
-      res1.json.results.forEach(function(e){
-        if(resNum!=0){
-          resNum--;
-          var place={name:e.name,id:e.place_id,going:0};
-          googleMapsClient.place({placeid:e.place_id}, function(err, res2) {
-            if (!err) {
+      res1.json.results.forEach(function(e,i){
+        var place={name:e.name,id:e.place_id,going:0};
+        googleMapsClient.place({placeid:e.place_id}, function(err2, res2) {
+          if (!err2) {
+            place.review="";
+            if(res2.json.result.reviews)
               place.review=res2.json.result.reviews[0].text;
-              mongodb.MongoClient.connect(process.env.DB_URL,function(err,db){
-                var coll=db.collection('nightlife');
-                coll.findOne({placeid:place.id},function(err,doc){
-                  if(err) throw err;
-                  if(doc){
-                    place.going=doc[place.id].length;
+            
+            var coll=db.collection('nightlife');
+            coll.findOne({placeid:place.id},function(err3,doc){
+              if(doc){
+                place.going=doc[place.id].length;
+              }
+              if(res2.json.result.photos){
+                place.htmlattrs=res2.json.result.photos[0].html_attributions;
+                requ.get("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+res2.json.result.photos[0].photo_reference+"&key="+process.env.API_KEY)
+                .on('response', function(res3) {
+                  place.imageUrl=res3.request.uri.href;
+                  placeResults.push(place);
+                  resNum--;
+                  if(resNum==0){
+                    request.session.places=placeResults;
+                    res.send({uplaceid:null,places:placeResults});
                   }
-                  if(res2.json.result.photos){
-                    place.htmlattrs=res2.json.result.photos[0].html_attributions;
-                    requ.get("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+res2.json.result.photos[0].photo_reference+"&key="+process.env.API_KEY)
-                    .on('response', function(res3) {
-                      place.imageUrl=res3.request.uri.href;
-                      placeResults.push(place);
-                      resNum2--;
-                      if(resNum2==0){
-                        request.session.places=placeResults;
-                        res.send({uplaceid:null,places:placeResults});
-                      }
-                    })
-                    .on('error', function(err) {
-                      console.log("error:"+err)
-                    });
-                  }else{
-                    place.imageUrl="";
-                    placeResults.push(place);
-                    resNum2--;
-                    if(resNum2==0){
-                      request.session.places=placeResults;
-                      res.send({uplaceid:null,places:placeResults});
-                    }
-                  }
+                })
+                .on('error', function(err3){
+                  console.log("error:"+err3)
                 });
-              });
-            }else{
-              res.send({error:err});
-            }
-          });
-        }
-      });
+              }else{
+                place.imageUrl="";
+                placeResults.push(place);
+                resNum--;
+                if(resNum==0){
+                  request.session.places=placeResults;
+                  res.send({uplaceid:null,places:placeResults});
+                }
+              }
+            });
+          }else{
+            console.log(err2);
+            res.send({error:err2});
+          }
+        });
+      }); 
+
       
     }else{
       console.log(err);
     }
+  });     
   });
 });
 
