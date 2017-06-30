@@ -47,31 +47,43 @@ $("#body").on('click',".going",function(){
   }
 });
 
+$("#search").keyup(function(event){
+    if(event.keyCode == 13){
+        $("#search_bt").click();
+    }
+});
+
 $("#search_bt").click(function(){
   var address = $("#search").val().trim();
   if(address!=""){
     $("#searching").css("display","inline-block");
     $("#searching").addClass("blink");
     $.post("/get_bars",{address:address},function(res){
-      $(".row").remove();
-      res=res.places;
-      res.forEach(function(e,i){
-        var lr=(i%2==0)?("left"):("right");
-        var review=e.review.split(".")[0];
-        if(review==""){
-          review="No review";
-        }
-        review+=".";
-        var htmlattrs="";
-        if(e.htmlattrs && e.htmlattrs.length>0){
-          htmlattrs=e.htmlattrs[0];
-        }
-        var place="<div class='anim fade-in-"+lr+" row result'><div class='col-sm-3'><img alt='no image available' src='"
-        +e.imageUrl+"'/><br><br>"+htmlattrs+"</div><div class='col-sm-9'><button class='going btn btn-primary' data='"+e.id+"'>"+e.going+" Going</button><h4>"+e.name+"</h4><br/><i>&quot;"+review+"&quot;</i></div></div>";
-        $("#body").append(place);
+      if(res.error){
+        alert(res.error);
         $("#searching").css("display","none");
         $("#searching").removeClass("blink");
-      });
+      }else{
+        $(".row").remove();
+        res=res.places;
+        res.forEach(function(e,i){
+          var lr=(i%2==0)?("left"):("right");
+          var review=e.review.split(".")[0];
+          if(review==""){
+            review="No review";
+          }
+          review+=".";
+          var htmlattrs="";
+          if(e.htmlattrs && e.htmlattrs.length>0){
+            htmlattrs=e.htmlattrs[0];
+          }
+          var place="<div class='anim fade-in-"+lr+" row result'><div class='col-sm-3'><img alt='no image available' src='"
+          +e.imageUrl+"'/><br><br>"+htmlattrs+"</div><div class='col-sm-9'><button class='going btn btn-primary' data='"+e.id+"'>"+e.going+" Going</button><h4>"+e.name+"</h4><br/><i>&quot;"+review+"&quot;</i></div></div>";
+          $("#body").append(place);
+          $("#searching").css("display","none");
+          $("#searching").removeClass("blink");
+        });
+      }
     });
   }else{
     alert("Please enter a location/address to search.");
